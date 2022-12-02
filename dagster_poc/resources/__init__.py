@@ -1,13 +1,20 @@
 import os
+import pathlib
 import pandas as pd
 from dagster import IOManager, io_manager
+
+
+local_folder = pathlib.Path(__file__).parents[3].joinpath('sample_output')
 
 
 class MyIOManager(IOManager):
 
     def __init__(self, base_dir):
         print("Base dir: " + base_dir)
-        self._base_dir = base_dir
+        target_dir = os.path.join(local_folder, base_dir)
+        if not os.path.isdir(target_dir):
+            os.makedirs(target_dir)
+        self._base_dir = target_dir
 
     def _get_path(self, context) -> str:
         op_name = context.op_def.name
