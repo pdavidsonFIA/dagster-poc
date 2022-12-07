@@ -1,7 +1,7 @@
 from datetime import date
 
 import pandas as pd
-from dagster import op, In
+from dagster import op, graph
 
 
 def sample_data() -> pd.DataFrame:
@@ -18,9 +18,6 @@ def sample_data() -> pd.DataFrame:
     return df
 
 
-# @op(config_schema={"config_param": str},
-#     out={'test': Out()},
-#     )
 @op
 def generate_sample1() -> pd.DataFrame:
     # context.log.info("config_param: " + context.op_config["config_param"])
@@ -33,7 +30,21 @@ def generate_sample2() -> pd.DataFrame:
 
 
 @op
-def aggregate_samples() -> pd.DataFrame:
-    df = pd.concat((generate_sample1(), generate_sample2()), axis=0)
+def concat_samples(df1, df2) -> pd.DataFrame:
+    df = pd.concat((df1, df2), axis=0)
     df = df.groupby(['mgroup_id', 'd_from']).sum()
     return df
+
+
+@graph()
+def graph_samples():
+    df1 = generate_sample1()
+    df2 = generate_sample2()
+    return concat_samples(df1, df2)
+
+
+@graph
+def graph_stacked():
+    df1 = graph_samples()
+    df2 = graph_samples()
+    return concat_samples(df1, df2)

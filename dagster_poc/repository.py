@@ -1,16 +1,28 @@
-from dagster import repository
-from .jobs import aggregate_job #, diamond
+from dagster import repository, with_resources
 
-
+from .resources import  my_io_manager_int
+from .jobs import (
+job_int_param,
+job_from_graph,
+job_from_graph_stacked
+)
+from .assets.assets import (
+    asset_sample1,
+    # asset_sample2,
+    # concat_assets,
+    all_assets_job
+)
 @repository
 def dagster_poc():
-    repo = []
-    # repo += [*with_resources(load_assets_from_package_module(assets), resource_defs=resource_defs)]
-    repo += [aggregate_job] #, diamond]
-    return repo
-
-
-
-
-
-
+    return [
+        job_int_param,
+        job_from_graph,
+        job_from_graph_stacked,
+        asset_sample1,
+        # asset_sample2,
+        # concat_assets,
+        all_assets_job,
+        # *with_resources([asset_sample1,
+        #                  # asset_sample2, concat_assets
+        #                  ],resource_defs={'io_manager': my_io_manager_int})
+            ]
