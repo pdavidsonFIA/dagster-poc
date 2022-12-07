@@ -1,4 +1,5 @@
-from dagster import job
+from dagster import job, define_asset_job
+
 from .ops.ops import (
     generate_sample1,
     generate_sample2,
@@ -7,6 +8,7 @@ from .ops.ops import (
     graph_stacked
 )
 from .resources import my_io_manager_int
+
 
 @job(resource_defs={'io_manager': my_io_manager_int})
 def job_int_param():
@@ -17,3 +19,5 @@ def job_int_param():
 
 job_from_graph = graph_samples.to_job(resource_defs={'io_manager': my_io_manager_int})
 job_from_graph_stacked = graph_stacked.to_job(resource_defs={'io_manager': my_io_manager_int})
+
+all_assets_job = define_asset_job(name="all_assets_job")
