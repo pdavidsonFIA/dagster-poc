@@ -2,6 +2,13 @@
 
 This is a [Dagster](https://dagster.io/) project scaffolded with [`dagster project scaffold`](https://docs.dagster.io/getting-started/create-new-project).
 
+It is a minimal proof-of-concept for a typical workflow for me:
+- Workspaces are defined by a parameter
+- Functions load data, perform transformations and write output within the workspace
+
+**Note:** to materialize assets you need to hold Ctrl and click materialize -> this provides the prompt to scaffold missing config, and enter the parameter. 
+
+
 ## Getting started
 
 First, install your Dagster repository as a Python package. By using the --editable flag, pip will install your repository in ["editable mode"](https://pip.pypa.io/en/latest/topics/local-project-installs/#editable-installs) so that as you develop, local code changes will automatically apply.

@@ -5,7 +5,9 @@ from .jobs import (
     job_int_param,
     job_from_graph,
     job_from_graph_stacked,
-    all_assets_job
+    job_multi_sample,
+    all_assets_job,
+
 )
 
 from dagster import load_assets_from_package_module
@@ -20,6 +22,7 @@ def dagster_poc():
         job_int_param,
         job_from_graph,
         job_from_graph_stacked,
+        job_multi_sample,
         *with_resources(sample_assets, resource_defs={'io_manager': my_io_manager_int}),
         all_assets_job,
     ]
