@@ -1,8 +1,8 @@
 import pandas as pd
-from ..ops.ops import sample_data, concat_samples
+from ops.ops import sample_data, concat_samples
 from dagster import asset, AssetsDefinition
 
-from ..jobs import graph_multi_sample
+from jobs import graph_multi_sample
 
 @asset
 def asset_sample1() -> pd.DataFrame:

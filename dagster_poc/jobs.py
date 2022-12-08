@@ -1,6 +1,6 @@
 from dagster import job, define_asset_job
 
-from .ops.ops import (
+from ops.ops import (
     generate_sample1,
     generate_sample2,
     concat_samples,
@@ -8,7 +8,7 @@ from .ops.ops import (
     graph_stacked,
     graph_multi_sample
 )
-from .resources import my_io_manager_int
+from resources import my_io_manager_int
 
 
 @job(resource_defs={'io_manager': my_io_manager_int})
