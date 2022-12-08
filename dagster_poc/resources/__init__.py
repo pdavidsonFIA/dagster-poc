@@ -18,8 +18,12 @@ class MyIOManager(IOManager):
         self.base_dir = base_dir
 
     def _get_path(self, output_context) -> str:
-
-        file_name = f"{output_context.step_key}_{output_context.name}.pkl"
+        # file_name = f"{output_context.step_key}.pkl"
+        # if output_context.step_key is not None:
+        if output_context.step_key != 'none':
+            file_name = f"{output_context.step_key}_{output_context.name}.pkl"
+        else:
+            file_name = f"{output_context.name}.pkl"
         return os.path.join(self.base_dir, file_name)
 
     def handle_output(self, context, obj: pd.DataFrame):

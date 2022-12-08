@@ -6,8 +6,8 @@
 
 from dagster import repository, with_resources
 
-from resources import my_io_manager_int
-from jobs import (
+from .resources import my_io_manager_int
+from .jobs import (
     job_int_param,
     job_from_graph,
     job_from_graph_stacked,
@@ -17,7 +17,7 @@ from jobs import (
 )
 
 from dagster import load_assets_from_package_module
-import assets
+from . import assets
 
 sample_assets = load_assets_from_package_module(package_module=assets, group_name='sample')
 

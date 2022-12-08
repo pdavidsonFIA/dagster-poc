@@ -58,7 +58,7 @@ def summarize_data(df) -> pd.DataFrame:
 
 @graph
 def graph_multi_sample():
-    n_samples = 10
+    n_samples = 5
     samples = []
     for i in range(n_samples):
         samples.append(summarize_data.alias(f"summary_{i}")(generate_sample1.alias(f"sample_{i}")()))
