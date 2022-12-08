@@ -6,7 +6,8 @@ from .ops.ops import (
     concat_samples,
     graph_samples,
     graph_stacked,
-    graph_multi_sample
+    graph_multi_sample,
+pandas_pipe
 )
 from .resources import my_io_manager_int
 
@@ -23,5 +24,6 @@ job_from_graph_stacked = graph_stacked.to_job(resource_defs={'io_manager': my_io
 
 job_multi_sample = graph_multi_sample.to_job(resource_defs={'io_manager': my_io_manager_int})
 
+job_pipe = pandas_pipe.to_job(resource_defs={'io_manager': my_io_manager_int})
 
 all_assets_job = define_asset_job(name="all_assets_job")

@@ -12,6 +12,7 @@ from .jobs import (
     job_from_graph,
     job_from_graph_stacked,
     job_multi_sample,
+    job_pipe,
     all_assets_job,
 
 )
@@ -29,6 +30,7 @@ def dagster_poc():
         job_from_graph,
         job_from_graph_stacked,
         job_multi_sample,
+           job_pipe,
         *with_resources(sample_assets, resource_defs={'io_manager': my_io_manager_int}),
         all_assets_job,
     ]

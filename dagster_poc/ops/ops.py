@@ -36,6 +36,12 @@ def concat_samples(dfs: List[pd.DataFrame]) -> pd.DataFrame:
     df = df.groupby(['mgroup_id', 'd_from']).sum()
     return df
 
+@op
+def concat_only(dfs: List[pd.DataFrame]) -> pd.DataFrame:
+    df = pd.concat(dfs, axis=0)
+    # df = df.groupby(['mgroup_id', 'd_from']).sum()
+    return df
+
 
 @graph()
 def graph_samples():
@@ -63,3 +69,24 @@ def graph_multi_sample():
     for i in range(n_samples):
         samples.append(summarize_data.alias(f"summary_{i}")(generate_sample1.alias(f"sample_{i}")()))
     return concat_samples(samples)
+
+
+@op
+def pandas_pipe_op(df) -> pd.DataFrame:
+    # n_samples = 5
+    # samples = []
+    # df = generate_sample1()
+    df = df.pipe(summarize_data)
+
+    # for i in range(n_samples):
+    #     # samples.append(summarize_data.alias(f"summary_{i}")(generate_sample1.alias(f"sample_{i}")()))
+    #     df = generate_sample1.alias(f"sample_{i}")()
+    # samples.append(df)
+    return df
+
+@graph
+def pandas_pipe() -> pd.DataFrame:
+    df = generate_sample1()
+    x = [pandas_pipe_op(df)]
+    return concat_only(x)
+
