@@ -1,8 +1,8 @@
 from datetime import date
 from typing import List
-
 import pandas as pd
-from dagster import op, graph
+
+from dagster import op, graph, configured
 
 
 def sample_data() -> pd.DataFrame:
@@ -18,14 +18,26 @@ def sample_data() -> pd.DataFrame:
     df = df.astype({'d_from': 'datetime64[ns]',  'income': 'float64'})
     return df
 
-
 @op
-def generate_sample1() -> pd.DataFrame:
+def generate_single_sample() -> pd.DataFrame:
     # context.log.info("config_param: " + context.op_config["config_param"])
     return sample_data()
 
+
+# @op(config_schema={'sample_id': int})
+# def generate_conf_sample() -> pd.DataFrame:
+#     # context.log.info("config_param: " + context.op_config["config_param"])
+#     return sample_data()
+
+
+# @graph
+# def graph_from_conf():
+#     generate_conf_sample()
+
+
+
 @op
-def generate_sample2() -> pd.DataFrame:
+def generate_sample1() -> pd.DataFrame:
     # context.log.info("config_param: " + context.op_config["config_param"])
     return sample_data()
 
@@ -46,7 +58,7 @@ def concat_only(dfs: List[pd.DataFrame]) -> pd.DataFrame:
 @graph()
 def graph_samples():
     df1 = generate_sample1()
-    df2 = generate_sample2()
+    df2 = generate_single_sample()
     return concat_samples([df1, df2])
 
 
@@ -67,26 +79,7 @@ def graph_multi_sample():
     n_samples = 5
     samples = []
     for i in range(n_samples):
-        samples.append(summarize_data.alias(f"summary_{i}")(generate_sample1.alias(f"sample_{i}")()))
+        sample = configured(generate_sample1, name=f"generate_sample1_s{i}")({})()
+        samples.append(sample)
+        #samples.append(generate_sample1.alias(f'generate_sample1_s{i}')())
     return concat_samples(samples)
-
-
-@op
-def pandas_pipe_op(df) -> pd.DataFrame:
-    # n_samples = 5
-    # samples = []
-    # df = generate_sample1()
-    df = df.pipe(summarize_data)
-
-    # for i in range(n_samples):
-    #     # samples.append(summarize_data.alias(f"summary_{i}")(generate_sample1.alias(f"sample_{i}")()))
-    #     df = generate_sample1.alias(f"sample_{i}")()
-    # samples.append(df)
-    return df
-
-@graph
-def pandas_pipe() -> pd.DataFrame:
-    df = generate_sample1()
-    x = [pandas_pipe_op(df)]
-    return concat_only(x)
-
