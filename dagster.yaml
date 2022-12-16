@@ -1,4 +1,12 @@
-ops:
-  subfolder:
-    config:
-      param_set_id: 12
+telemetry:
+  enabled: false
+#storage:
+#  postgres:
+#    postgres_db:
+#      username: { user }
+#      password: { password }
+#      hostname: {HOST_NAME}
+#      db_name: {DB_NAME}
+#      port: 5432
+#      params:
+#        options: -csearch_path={ schema }
