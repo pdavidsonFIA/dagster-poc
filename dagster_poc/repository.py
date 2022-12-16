@@ -3,7 +3,7 @@ import pathlib
 # import sys
 
 
-from dagster import repository, with_resources, define_asset_job, make_values_resource
+from dagster import repository, with_resources, define_asset_job, make_values_resource, AssetsDefinition
 
 # from .resources.configs import output_config
 from .resources import my_fs_manager
@@ -15,14 +15,16 @@ config_mapping_factory
     # globals_config
 )
 from .ops.ops import (
-    graph_samples, graph_multi_sample,
+    graph_samples,
+    graph_multi_sample,
     # graph_from_conf
 )
 # from .jobs import job_conf
 from .assets.assets import (
     asset_sample1,
     asset_sample2,
-# conf_asset
+concat_assets,
+    # conf_asset
 )
 
 
@@ -37,6 +39,7 @@ resource_defs_by_deployment_name = {
 }
 
 
+#graph_multi_sample = AssetsDefinition.from_graph(graph_multi_sample)
 
 @repository
 def dagster_poc():
@@ -62,11 +65,13 @@ def dagster_poc():
     #asset2_job = define_asset_job(name='asset2_job', selection='asset_sample2', config=output_config)
     nodes_for_for_asset2 = ['asset_sample2']
     asset2_job = define_asset_job(name='asset2_job', selection=nodes_for_for_asset2, config=config_mapping_factory(nodes_for_for_asset2))
-    nodes_for_for_asset12 = ['asset_sample2','asset_sample1']
+    nodes_for_for_asset12 = ['asset_sample2','asset_sample1', 'concat_assets']
     asset12_job = define_asset_job(name='asset12_job', selection=nodes_for_for_asset12, config=config_mapping_factory(nodes_for_for_asset12))
 
+    # asset_conf = define_asset_job(name='conf_asset_job', selection='conf_asset')
     #asset12_job = define_asset_job(name='asset12_job', selection=['asset_sample2','asset_sample1'], config=output_config)
-
+    #nodes_multi = [n.name for n in graph_multi_sample.node_defs] + ['graph_multi_sample']
+    #asset_multi_job = define_asset_job(name='multi_asset_job', selection='graph_multi_sample', config=config_mapping_factory(nodes_multi))
     return [
         # job_conf,
         job_from_graph,
@@ -74,7 +79,10 @@ def dagster_poc():
         # job_conf2,
         asset12_job,
         asset2_job,
-        *with_resources([asset_sample1, asset_sample2], resource_defs=resource_defs),
+
+        #multi_assetx,
+        *with_resources([asset_sample1, asset_sample2, concat_assets], resource_defs=resource_defs),
+  #      asset_multi_job,
         # *with_resources([asset_sample1], resource_defs=resource_defs)
         #   all_assets_job,
     ]

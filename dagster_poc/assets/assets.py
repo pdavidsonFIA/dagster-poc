@@ -1,5 +1,5 @@
 import pandas as pd
-from dagster import asset, AssetsDefinition, SourceAsset, AssetKey
+from dagster import asset, SourceAsset, AssetKey
 
 from ..ops.ops import sample_data, concat_samples
 
@@ -30,7 +30,9 @@ sourcesample = SourceAsset(key=AssetKey("sourcesample"))
 def concat_assets_incl_source(asset_sample1, asset_sample2, sourcesample) -> pd.DataFrame:
     return concat_samples([asset_sample1, asset_sample2, sourcesample])
 
+#
+# @asset
+# def conf_asset():
+#     return sample_data()
 
-@asset(required_resource_keys={"globals"})
-def conf_asset():
-    return sample_data()
+

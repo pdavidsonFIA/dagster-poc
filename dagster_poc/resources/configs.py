@@ -75,26 +75,14 @@ def config_mapping_factory(outputs: List[str]):
     return ops_output_config_factory
 
 
-#
-# @config_mapping(config_schema={"param_id": int})
-# def globals_config(val):
-#     conf = load_conf_from_csv(val["param_id"])
-#     list_of_samples = list(range(5))
-#
-#     workspace_root = os.path.join(conf.get('run_type'), conf.get('rep_date'), conf.get('nickname'))
-#     ops_output_config_schema = {}
-#     for output in ['concat_samples']: #, 'generate_sample1', 'generate_sample2']:
-#         output_path = os.path.join(workspace_root, 'result', f"{output}.pkl")
-#         ops_output_config_schema[output] = {'outputs': {'result': {'output_path': output_path}}}
-#
-#     for output_per_sample in ['generate_sample1']: #, 'generate_sample2'
-#         for s in list_of_samples:
-#             output = f"{output_per_sample}_s{s}"
-#             output_path = os.path.join(workspace_root, 'result', f"{output}.pkl")
-#             ops_output_config_schema[output] = {'outputs': {'result': {'output_path': output_path}}}
-#
-#     return {'config':
-#                 {'run_type': conf.get('run_type'),
-#                  'workspace_root': workspace_root}
-#             }
-#
+
+@config_mapping(config_schema={"param_id": int})
+def globals_config(val):
+    conf = load_conf_from_csv(val["param_id"])
+    workspace_root = os.path.join(conf.get('run_type'), conf.get('rep_date'), conf.get('nickname'))
+    return {'config':
+                {'run_type': conf.get('run_type'),
+                 'workspace_root': workspace_root,
+                 }
+            }
+
