@@ -18,7 +18,7 @@ from .assets.assets import (
 )
 from .assets.partition_assets import partition_sample, partition_samplestep
 from .assets.source_data import raw_data_scenarios, raw_data_monthly, raw_data
-from .assets.downstream_assets import proc_data, downstream_conf, processed_asset_keys
+from .assets.downstream_assets import proc_data, downstream_conf, processed_asset_keys, concat_downstream
 
 local_dev_folder = str(pathlib.Path(__file__).parents[2].joinpath('dev').resolve())
 local_prod_folder = str(pathlib.Path(__file__).parents[2].joinpath('prod').resolve())
@@ -52,12 +52,12 @@ nodes_for_for_asset12 = ['asset_sample2', 'asset_sample1', 'concat_assets']
 asset12_job = define_asset_job(name='asset12_job', selection=nodes_for_for_asset12,
                                config=config_mapping_factory(nodes_for_for_asset12))
 
-downstream_job = define_asset_job(name='downstream_job', selection=processed_asset_keys,config=downstream_conf)
+downstream_job = define_asset_job(name='downstream_job', selection=processed_asset_keys +['concat_downstream'],config=downstream_conf)
 
 
 dagster_poc = Definitions(
     assets=[asset_sample1, asset_sample2, concat_assets, partition_sample, partition_samplestep,
-            raw_data_monthly, raw_data_scenarios, *raw_data, *proc_data
+            raw_data_monthly, raw_data_scenarios, *raw_data, *proc_data, concat_downstream,
             ],
     jobs=[job_from_graph, job_graph_multi, asset12_job, asset2_job,
           job_from_graph_part,

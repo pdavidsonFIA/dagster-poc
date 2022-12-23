@@ -89,9 +89,12 @@ class MyPartitionedIOManager(IOManager):
         obj.to_pickle(self._get_path(context))
 
     def load_input(self, context: "InputContext"):
-        # This forces loading a specific upstream x partition based on asset configurations
-        partition_override = context.step_context.op_config.get('partition_override')
-        return pd.read_pickle(self._get_path(context, partition_override))
+        try:
+            # This forces loading a specific upstream x partition based on asset configurations
+            partition_override = context.step_context.op_config.get('partition_override')
+        except:
+            partition_override=None
+        return pd.read_pickle(self. _get_path(context, partition_override))
 
 
 @io_manager(config_schema={"base_dir": str})

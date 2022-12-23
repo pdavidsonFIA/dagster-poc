@@ -14,6 +14,7 @@ define_asset_job,
 )
 from ..common import sample_data
 from ..partitions import all_scenarios, all_months, all_params
+from ..ops.ops import concat_samples
 
 
 source_asset_keys = ["source1", "source2", "source3"]
@@ -71,7 +72,18 @@ def downstream_config_factory(outputs: List[str]):
     return ops_output_config_factory
 
 
+proc_data = procesed_data_factory(asset_keys)
+
+
+@asset(ins={k: AssetIn(k) for k in processed_asset_keys}, group_name='part',io_manager_key='part_assets')
+def concat_downstream(**proc_data) -> pd.DataFrame:
+    #proc data is a dict of dataframes
+    print('Concat downstream called')
+    # processed_data = []
+    # for k, v in proc_data:
+    #     processed_data.append(v)
+    return concat_samples(list(proc_data.values()))
+
 
 downstream_conf = downstream_config_factory(processed_asset_keys)
-proc_data = procesed_data_factory(asset_keys)
 
