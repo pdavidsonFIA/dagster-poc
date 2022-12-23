@@ -1,4 +1,4 @@
-param_id,run_type,rep_date,nickname,n_samples
-0,dev,2022-09-30,dev0,5
-1,dev,2022-09-30,dev1,2
-2,dev,2022-09-30,dev2,7
+param_id,run_type,rep_date,nickname,n_samples,xdata_scenario
+0,dev,2022-09-30,dev0,5,a
+1,dev,2022-09-30,dev1,2,b
+2,dev,2022-09-30,dev2,7,c

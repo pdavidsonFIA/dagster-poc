@@ -58,3 +58,42 @@ def my_fs_manager(init_context) -> MyIOManager:
     return MyIOManager(base_dir=init_context.resource_config["base_dir"])
 
 
+
+class MyPartitionedIOManager(IOManager):
+    def __init__(self, base_dir):
+        if not os.path.isdir(base_dir):
+            os.makedirs(base_dir)
+        self.base_dir = base_dir
+
+    def _get_path(self, context, partition_override=None) -> str:
+        if partition_override is not None:
+            print(f'Asset keys: { context.asset_key.path}')
+            part_keys = partition_override.split("|")
+            output_path = os.path.join(self.base_dir, *part_keys, *context.asset_key.path)
+        elif context.has_partition_key:
+            # To handle multi partitions with separator |
+            part_keys = context.asset_partition_key.split("|")
+            print(f'Asset keys: { context.asset_key.path}')
+            print(f'Part key: {context.asset_partition_key}')
+            print(f'Part keysss: {context.asset_partition_keys}')
+            output_path = os.path.join(self.base_dir, *part_keys, *context.asset_key.path)
+            # output_path = os.path.join(self.base_dir, *context.asset_key.path)
+        else:
+            output_path = os.path.join(self.base_dir, *context.asset_key.path)
+        pathlib.Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+        # output_context.log.info(f'Output path: {output_path}')
+        return output_path
+
+
+    def handle_output(self, context: "OutputContext", obj: pd.DataFrame):
+        obj.to_pickle(self._get_path(context))
+
+    def load_input(self, context: "InputContext"):
+        # This forces loading a specific upstream x partition based on asset configurations
+        partition_override = context.step_context.op_config.get('partition_override')
+        return pd.read_pickle(self._get_path(context, partition_override))
+
+
+@io_manager(config_schema={"base_dir": str})
+def my_fs_part_manager(init_context) -> MyPartitionedIOManager:
+    return MyPartitionedIOManager(base_dir=init_context.resource_config["base_dir"])

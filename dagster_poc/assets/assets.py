@@ -1,7 +1,8 @@
 import pandas as pd
-from dagster import asset, SourceAsset, AssetKey
+from dagster import asset
 
-from ..ops.ops import sample_data, concat_samples
+from ..ops.ops import concat_samples
+from ..common import sample_data
 
 
 # @asset(code_version=version)
@@ -17,22 +18,6 @@ def asset_sample2() -> pd.DataFrame:
 
 @asset
 def concat_assets(asset_sample1, asset_sample2) -> pd.DataFrame:
+    print('Concat called')
     return concat_samples([asset_sample1, asset_sample2])
-
-
-# graph_asset = AssetsDefinition.from_graph(graph_multi_sample)
-
-
-sourcesample = SourceAsset(key=AssetKey("sourcesample"))
-
-
-@asset
-def concat_assets_incl_source(asset_sample1, asset_sample2, sourcesample) -> pd.DataFrame:
-    return concat_samples([asset_sample1, asset_sample2, sourcesample])
-
-#
-# @asset
-# def conf_asset():
-#     return sample_data()
-
 

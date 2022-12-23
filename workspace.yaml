@@ -1,2 +1,4 @@
 load_from:
   - python_package: dagster_poc
+  - python_file:
+      relative_path: dagster_poc//repo2.py

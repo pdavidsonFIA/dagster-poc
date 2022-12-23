@@ -1,39 +1,15 @@
-from datetime import date
 from typing import List
 import pandas as pd
 
-from dagster import op, graph, configured
+from dagster import op, graph, configured, Out
 
+from ..common import sample_data
 
-def sample_data() -> pd.DataFrame:
-    df = {
-        1: {'mgroup_id': 1, 'd_from': date(2020, 1, 1), 'income':100},
-        2: {'mgroup_id': 2, 'd_from': date(2020, 1, 1), 'income':100},
-        3: {'mgroup_id': 3, 'd_from': date(2020, 1, 1), 'income':100},
-        4: {'mgroup_id': 4, 'd_from': date(2020, 1, 1), 'income':100},
-    }
-
-    df = pd.DataFrame.from_dict(df, orient='index')
-
-    df = df.astype({'d_from': 'datetime64[ns]',  'income': 'float64'})
-    return df
 
 @op
 def generate_single_sample() -> pd.DataFrame:
     # context.log.info("config_param: " + context.op_config["config_param"])
     return sample_data()
-
-
-# @op(config_schema={'sample_id': int})
-# def generate_conf_sample() -> pd.DataFrame:
-#     # context.log.info("config_param: " + context.op_config["config_param"])
-#     return sample_data()
-
-
-# @graph
-# def graph_from_conf():
-#     generate_conf_sample()
-
 
 
 @op
@@ -82,4 +58,40 @@ def graph_multi_sample():
         sample = configured(generate_sample1, name=f"generate_sample1_s{i}")({})()
         samples.append(sample)
         #samples.append(generate_sample1.alias(f'generate_sample1_s{i}')())
+
+    # asset1 = dagster_poc.get_asset_value_loader().load_asset_value('asset_sample1')
+    # samples.append(asset1)
     return concat_samples(samples)
+
+
+@op()
+def load_pickle(key):
+    fpath = f'C:\\Users\peter.davidson\PycharmProjects\dev\partition_sample\\{key}'
+    return pd.read_pickle(fpath)
+
+
+from ..partitions import all_scenarios
+# def partition_loader_factory():
+#     keys = all_scenarios.get_partition_keys()
+#     @op(out={f'partition_sample_{key}': Out() for key in keys})
+#     def asset_loader():
+#         return tuple(configured(load_pickle, name=key)({})(key) for key in keys)
+#     return asset_loader()
+
+
+keys = all_scenarios.get_partition_keys()
+@op(out={f'partition_sample_{key}': Out() for key in keys})
+def asset_loader():
+    return tuple(configured(load_pickle, name=key)({})(key) for key in keys)
+
+
+
+@graph
+def partitions_graph():
+    samples = []
+    for i in list(asset_loader()):
+        sample = i
+        samples.append(sample)
+    return concat_samples(samples)
+
+

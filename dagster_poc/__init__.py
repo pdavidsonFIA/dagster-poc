@@ -1,1 +1,1 @@
-from .repository import dagster_poc
+from .definition import dagster_poc
